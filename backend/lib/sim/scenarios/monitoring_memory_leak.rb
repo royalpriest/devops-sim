@@ -9,6 +9,7 @@ module Sim
       self.topic = "Monitoring"
       self.title = "Memory is climbing"
       self.summary = "A memory alert fires. Use the dashboard and the server to trace the cause and fix it for good."
+      self.focus_metric = "memory"
       self.briefing = <<~TEXT
         It's a quiet afternoon. The site is up and the dashboard looks calm.
         Keep an eye on the memory graph for web-01. Monitoring will page you
@@ -21,7 +22,8 @@ module Sim
       # Once paged, the leak slows down so a beginner has time to investigate
       # before the kernel starts killing processes.
       LEAK_AFTER_ALERT = 40
-      LEAK_STARTS_AT = 2
+      LEAK_STARTS_AT = 1
+      HEAD_START_MB = 600
       ALERT_AT = 85
       RECOVERED_BELOW = 70
       OOM_AT = 98
@@ -33,6 +35,9 @@ module Sim
         data["session"] = { "host" => "laptop", "user" => "dev", "cwd" => "/home/dev" }
         world = World.new(data)
         ShopWorld.boot(self, world, "postgresql", "nginx", "shop-web", WORKER)
+        # The leak has been going for a while before the player arrives, so
+        # the alert fires within a minute or so of real time.
+        world.service_processes(WORKER, WEB).first["mem_mb"] += HEAD_START_MB
         data
       end
 

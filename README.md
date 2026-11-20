@@ -12,20 +12,31 @@ so you can't break anything.
 | 1 | GitHub     | Open your first PR     | planned     |
 | 2 | CI         | The build is red       | planned     |
 | 3 | Deploy     | Roll back a bad release| planned     |
-| 4 | Linux      | The disk is full       | playable (API) |
-| 5 | Monitoring | Memory is climbing     | playable (API) |
+| 4 | Linux      | The disk is full       | playable    |
+| 5 | Monitoring | Memory is climbing     | playable    |
 
 Each chapter can be played on its own.
 
 ## Running it
+
+In one terminal:
 
 ```sh
 cd backend
 bundle install
 bin/rails db:prepare
 bin/rails server        # API on http://localhost:3000
-bin/rails test
 ```
+
+In another:
+
+```sh
+cd frontend
+npm install
+npm run dev             # open http://localhost:5173
+```
+
+Tests and checks: `cd backend && bin/rails test && bin/rubocop`, `cd frontend && npm run lint && npm run build`.
 
 ## Trying the API
 

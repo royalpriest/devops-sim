@@ -14,7 +14,8 @@ class RunPresenter
       status: @run.status,
       scenario: {
         key: scenario.key, title: scenario.title, topic: scenario.topic,
-        chapter: scenario.chapter, summary: scenario.summary, briefing: scenario.briefing
+        chapter: scenario.chapter, summary: scenario.summary, briefing: scenario.briefing,
+        focus_metric: scenario.focus_metric
       }
     }.merge(live)
   end
@@ -41,7 +42,11 @@ class RunPresenter
       objectives: @engine.objectives,
       alerts: @world.alerts,
       metrics: @world.data["metrics"],
-      services: services
+      services: services,
+      current_host: @world.current_host,
+      hint: @engine.scenario.hint_for(@world),
+      map: @engine.scenario.map(@world),
+      logs: @engine.scenario.logs(@world)
     }
   end
 
