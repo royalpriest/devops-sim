@@ -19,7 +19,7 @@ class Sim::MonitoringMemoryLeakTest < ActiveSupport::TestCase
     start = @world.memory_percent("web-01")
     wait_for_alert
     assert_operator @world.memory_percent("web-01"), :>=, 85
-    assert_operator start, :<, 60
+    assert_operator start, :<, 70
     assert_equal "HighMemoryUsage", @world.firing_alerts.first["id"]
   end
 

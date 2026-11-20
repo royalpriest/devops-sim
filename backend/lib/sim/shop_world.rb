@@ -114,6 +114,54 @@ module Sim
       names.each { |name| scenario.start_service(world, name, host: host) }
     end
 
+    MAP_NODES = [
+      { "id" => "laptop", "label" => "Your laptop", "kind" => "dev", "inspect" => "cat ~/on-call.md" },
+      { "id" => "nginx", "label" => "nginx", "kind" => "front door", "service" => "nginx" },
+      { "id" => "shop-web", "label" => "shop-web", "kind" => "Rails app", "service" => "shop-web" },
+      { "id" => "shop-worker", "label" => "shop-worker", "kind" => "background jobs", "service" => "shop-worker" },
+      { "id" => "postgresql", "label" => "postgresql", "kind" => "database", "service" => "postgresql" },
+      { "id" => "disk", "label" => "Disk /", "kind" => "storage", "inspect" => "df -h" }
+    ].freeze
+    MAP_EDGES = [ %w[laptop nginx], %w[nginx shop-web], %w[shop-web postgresql], %w[shop-worker postgresql],
+                  %w[shop-web shop-worker], %w[shop-web disk] ].freeze
+
+    # What the play screen draws: the shop's parts, how they connect, and
+    # which one is in trouble right now. Status comes straight from the world.
+    def map(world)
+      nodes = MAP_NODES.map do |node|
+        node.merge(map_status(world, node)).merge("host" => node["id"] == "laptop" ? "laptop" : "web-01")
+      end
+      { "nodes" => nodes, "edges" => MAP_EDGES }
+    end
+
+    def map_status(world, node)
+      if node["id"] == "laptop"
+        on_server = world.current_host == "web-01"
+        return { "status" => "ok", "detail" => on_server ? "connected over ssh" : "you are here" }
+      end
+      if node["id"] == "disk"
+        pct = world.disk_percent("web-01")
+        return { "status" => pct >= 90 ? "bad" : pct >= 80 ? "warn" : "ok", "detail" => "#{pct}% used", "level" => pct }
+      end
+
+      svc = world.service(node["service"], "web-01")
+      mem = world.service_processes(node["service"], "web-01").sum { |p| p["mem_mb"] }.round
+      level = (mem * 100.0 / world.host("web-01")["memory_total_mb"]).round
+      status, detail =
+        if svc["state"] != "active" then [ "bad", svc["state"] == "failed" ? "crashed" : "stopped" ]
+        elsif level >= 40 then [ "warn", "#{format_mb(mem)} · high memory" ]
+        else [ "ok", "running · #{format_mb(mem)}" ]
+        end
+      { "status" => status, "detail" => detail, "level" => level, "inspect" => "systemctl status #{node['service']}" }
+    end
+
+    def format_mb(mb) = mb >= 1024 ? "#{format('%.2f', mb / 1024.0)} GB" : "#{mb} MB"
+
+    # Recent journal lines per service, for the Logs tab.
+    def logs(world)
+      world.services("web-01").to_h { |name, svc| [ name, Array(svc["journal"]).last(40) ] }
+    end
+
     # Shared HTTP behaviour: the site is up when nginx and shop-web are running.
     def http(world, url)
       return nil unless url.match?(%r{\A(https?://)?(shop\.example|localhost|127\.0\.0\.1|web-01)(:\d+)?(/.*)?\z})

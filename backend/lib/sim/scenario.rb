@@ -11,12 +11,16 @@ module Sim
       def all = Scenarios::ALL.sort_by(&:chapter)
       def find(key) = all.find { |s| s.key == key } || raise(KeyError, "Unknown scenario #{key}")
 
-      attr_accessor :key, :title, :chapter, :topic, :summary, :briefing
+      attr_accessor :key, :title, :chapter, :topic, :summary, :briefing, :focus_metric
     end
 
     def key = self.class.key
 
     def objectives = []
+
+    # The live picture for the play screen. Scenarios set in the shop share one.
+    def map(world) = ShopWorld.map(world)
+    def logs(world) = ShopWorld.logs(world)
 
     def build_world
       raise NotImplementedError

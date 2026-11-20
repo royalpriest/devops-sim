@@ -9,6 +9,7 @@ module Sim
       self.topic = "Linux"
       self.title = "The disk is full"
       self.summary = "SSH into the server, find what filled the disk, and bring the crashed app back."
+      self.focus_metric = "disk"
       self.briefing = <<~TEXT
         Your phone buzzes: "shop.example is showing 502 errors!"
         You're on call. The shop runs on a server called web-01.

@@ -11,8 +11,10 @@
 - `backend/`: Rails 8.1 API-only app (SQLite, Action Cable). The engine lives in `backend/lib/sim/`:
   `world.rb` (state), `shell.rb` (command interpreter), `engine.rb` (time + objectives),
   `scenarios/*.rb` (one chapter each, listed in `scenarios.rb`).
-- `frontend/`: React + TypeScript (Vite).
-- UI follows Royal's UI style (Geist, product-mode tokens).
+- `frontend/`: React + TypeScript (Vite), xterm.js terminal. Play screen is `src/components/PlayScreen.tsx`.
+- UI follows Royal's UI style rules (Geist, motion, accessibility) with this app's own "System map" theme in
+  `frontend/src/styles.css`. Don't reuse the helpdesk look (dark sidebar + blue pill).
 
 ## Checks before opening a pull request
 - `cd backend && bin/rails test && bin/rubocop && bin/brakeman --no-pager`
+- `cd frontend && npm run lint && npm run build`
