@@ -13,7 +13,7 @@
   `scenarios/*.rb` (one chapter each, listed in `scenarios.rb`). Delivery chapters use `repo.rb` (fake git),
   `delivery_commands.rb` (git, gh, bin/rails test, deploy), `delivery_ci.rb` and `delivery_world.rb`.
 - `frontend/`: React + TypeScript (Vite), xterm.js terminal. Play screen is `src/components/PlayScreen.tsx`.
-- UI follows Royal's UI style rules (Geist, motion, accessibility) with this app's own "System map" theme in
+- UI follows Royal's UI style rules (motion, accessibility). Type: Space Grotesk headings, Geist body, JetBrains Mono for terminal and labels, with this app's own "System map" theme in
   `frontend/src/styles.css`. Don't reuse the helpdesk look (dark sidebar + blue pill).
 
 ## Checks before opening a pull request
