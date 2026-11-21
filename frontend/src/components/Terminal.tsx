@@ -21,6 +21,7 @@ interface Props {
 
 const COLORS = { amber: '\x1b[38;2;255;181;71m', green: '\x1b[38;2;75;227;161m', muted: '\x1b[38;2;142;137;176m', red: '\x1b[38;2;255;143;166m' }
 const RESET = '\x1b[0m'
+const FONT = '"JetBrains Mono", ui-monospace, monospace'
 
 // A small line editor on top of xterm.js: typing, backspace, left/right,
 // history with up/down, Ctrl+C, Ctrl+L and paste. Commands go to the server.
@@ -68,7 +69,7 @@ export const Terminal = forwardRef<TerminalHandle, Props>(function Terminal({ pr
 
   useEffect(() => {
     const t = new XTerm({
-      fontFamily: '"Geist Mono", ui-monospace, monospace',
+      fontFamily: FONT,
       fontSize: 13,
       lineHeight: 1.35,
       cursorBlink: true,
@@ -91,6 +92,13 @@ export const Terminal = forwardRef<TerminalHandle, Props>(function Terminal({ pr
       if (dims && (dims.cols !== t.cols || dims.rows !== t.rows)) fit.fit()
     })
     resize.observe(host.current!)
+    // The web font may arrive after xterm measured its cells. Re-measure once it's loaded.
+    void document.fonts?.load('13px "JetBrains Mono"').then(() => {
+      if (term.current !== t) return
+      t.options.fontFamily = 'monospace'
+      t.options.fontFamily = FONT
+      if (host.current?.offsetWidth) fit.fit()
+    })
     t.onResize(() => redrawLine())
     if (intro) t.write(COLORS.muted + intro.replace(/\r?\n/g, '\r\n') + RESET + '\r\n\r\n')
     redrawLine()

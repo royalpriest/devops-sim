@@ -3,7 +3,8 @@
 :root,
 [data-theme='dark'] {
   --font-sans: 'Geist', system-ui, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Space Grotesk', 'Geist', system-ui, sans-serif;
 
   --ground: #0D0B1A;
   --surface: #15132A;
@@ -48,6 +49,7 @@ body { font: 14px/1.5 var(--font-sans); color: var(--ink); background: var(--gro
 h1, h2 { margin: 0; letter-spacing: -0.02em; }
 p { margin: 0; }
 button { font: inherit; color: inherit; }
+h1, h2, .node-name, .metric, .chapter-n { font-family: var(--font-display); }
 :focus-visible { outline: none; box-shadow: var(--focus); }
 .mono { font-family: var(--font-mono); }
 .muted { color: var(--muted); }
