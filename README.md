@@ -9,13 +9,13 @@ so you can't break anything.
 
 | # | Topic      | Chapter                | Status      |
 |---|------------|------------------------|-------------|
-| 1 | GitHub     | Open your first PR     | planned     |
-| 2 | CI         | The build is red       | planned     |
-| 3 | Deploy     | Roll back a bad release| planned     |
+| 1 | GitHub     | Open your first pull request | playable |
+| 2 | CI         | Works on my machine    | playable    |
+| 3 | Deploy     | The health check is lying | playable |
 | 4 | Linux      | The disk is full       | playable    |
 | 5 | Monitoring | Memory is climbing     | playable    |
 
-Each chapter can be played on its own.
+Each chapter can be played on its own, and each ends with a short note on the real incident or practice it's based on.
 
 ## Running it
 

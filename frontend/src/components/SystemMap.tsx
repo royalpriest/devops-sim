@@ -27,7 +27,12 @@ interface Props {
 }
 
 export function SystemMap({ nodes, edges, onInspect }: Props) {
-  const layout = useNarrow() ? NARROW : WIDE
+  const narrow = useNarrow()
+  // Scenarios can place their own boxes; otherwise use the shop server layout.
+  const layout: Record<string, [number, number]> = Object.fromEntries(nodes.map((n) => {
+    const own = narrow ? n.pos_narrow : n.pos
+    return [n.id, own ?? (narrow ? NARROW : WIDE)[n.id] ?? [50, 50]]
+  }))
   const byId = Object.fromEntries(nodes.map((n) => [n.id, n]))
 
   return (
@@ -41,7 +46,7 @@ export function SystemMap({ nodes, edges, onInspect }: Props) {
         })}
       </svg>
       {nodes.map((node) => {
-        const [x, y] = layout[node.id] ?? [50, 50]
+        const [x, y] = layout[node.id]
         return (
           <button
             key={node.id}

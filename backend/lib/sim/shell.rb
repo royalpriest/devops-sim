@@ -6,6 +6,8 @@ module Sim
   # and `>` / `>>` redirection. Every command reads and changes the World;
   # nothing ever touches the real machine.
   class Shell
+    include DeliveryCommands
+
     Result = Struct.new(:output, :exit_code, keyword_init: true)
 
     FILTERS = %w[grep head tail sort wc].freeze
@@ -70,6 +72,7 @@ module Sim
 
       @sudo = sudo || root?
       args = args.flat_map { |a| expand_glob(a) } unless %w[grep sed echo].include?(name)
+      name = "rails" if %w[bin/rails ./bin/rails].include?(name)
       handler = "cmd_#{name.to_s.tr('-', '_')}"
       result =
         if name == ":" then ok("")
@@ -218,7 +221,7 @@ module Sim
         path = world.resolve(raw)
         entries =
           if world.file?(path) then [ [ File.basename(path), path, false ] ]
-          elsif world.directory?(path) then world.children(path)
+          elsif world.directory?(path) then world.children(path).reject { |name, _, _| name.start_with?(".") && !flags.include?("a") }
           else next "ls: cannot access '#{raw}': No such file or directory"
           end
         remember_listing(path)
@@ -379,7 +382,7 @@ module Sim
       rescue RegexpError
         Regexp.new(Regexp.escape(m[1]))
       end
-      replacement = m[2].gsub("\\/", "/")
+      replacement = m[2].gsub("\\/", "/").gsub("\\n", "\n")
       updated = m[3] == "g" ? f["content"].gsub(pattern, replacement) : f["content"].lines.map { |l| l.sub(pattern, replacement) }.join
       return ok(updated.chomp) unless in_place
       return fail("sed: couldn't open temporary file #{File.dirname(path)}/sedXXXX: Permission denied") unless writable?(path)
@@ -537,7 +540,8 @@ module Sim
     # --- network ------------------------------------------------------------
 
     def cmd_curl(args)
-      url = args.reject { |a| a.start_with?("-") }.first
+      skip = args.each_index.select { |i| %w[-X -d -H --data --header --request].include?(args[i - 1]) && i.positive? }
+      url = args.each_with_index.reject { |a, i| a.start_with?("-") || skip.include?(i) }.map(&:first).first
       return fail("curl: try 'curl https://shop.example/health'") unless url
       status, body = scenario.http(world, url)
       return fail("curl: (6) Could not resolve host: #{url}", 6) unless status

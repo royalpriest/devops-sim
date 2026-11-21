@@ -11,7 +11,7 @@ module Sim
       def all = Scenarios::ALL.sort_by(&:chapter)
       def find(key) = all.find { |s| s.key == key } || raise(KeyError, "Unknown scenario #{key}")
 
-      attr_accessor :key, :title, :chapter, :topic, :summary, :briefing, :focus_metric
+      attr_accessor :key, :title, :chapter, :topic, :summary, :briefing, :focus_metric, :real_world
     end
 
     def key = self.class.key
@@ -35,6 +35,13 @@ module Sim
     end
 
     def on_file_changed(world, path); end
+    def on_commit(world, sha); end
+    def on_push(world, branch); end
+    def on_pr(world, pr); end
+    def on_rollback(world, release); end
+
+    # [passed?, output lines] for `bin/rails test` and CI, given repo files.
+    def run_tests(_world, _files) = [ true, [ "0 runs, 0 assertions, 0 failures" ] ]
     def on_ssh(world, host); end
 
     def on_kill(world, process, _signal)

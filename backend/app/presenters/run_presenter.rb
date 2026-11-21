@@ -15,7 +15,7 @@ class RunPresenter
       scenario: {
         key: scenario.key, title: scenario.title, topic: scenario.topic,
         chapter: scenario.chapter, summary: scenario.summary, briefing: scenario.briefing,
-        focus_metric: scenario.focus_metric
+        focus_metric: scenario.focus_metric, real_world: scenario.real_world
       }
     }.merge(live)
   end

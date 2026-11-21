@@ -3,6 +3,9 @@ module Sim
   # story can change without touching the engine.
   module Scenarios
     ALL = [
+      GithubFirstPr,
+      CiWorksOnMyMachine,
+      DeployRollback,
       LinuxDiskFull,
       MonitoringMemoryLeak
     ].freeze

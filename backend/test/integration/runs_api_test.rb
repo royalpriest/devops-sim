@@ -4,7 +4,7 @@ class RunsApiTest < ActionDispatch::IntegrationTest
   test "lists scenarios" do
     get "/api/scenarios"
     assert_response :success
-    assert_equal %w[linux-disk-full monitoring-memory-leak], response.parsed_body.map { |s| s["key"] }
+    assert_equal %w[github-first-pr ci-works-on-my-machine deploy-rollback linux-disk-full monitoring-memory-leak], response.parsed_body.map { |s| s["key"] }
   end
 
   test "starts a run, runs a command and saves the world" do

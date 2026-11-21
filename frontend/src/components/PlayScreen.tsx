@@ -27,7 +27,9 @@ export function PlayScreen({ run, onExit, onNext }: Props) {
   const term = useRef<TerminalHandle>(null)
   const scenario = run.scenario
   const metric = scenario.focus_metric
-  const threshold = metric === 'disk' ? 90 : 85
+  const threshold = metric === 'disk' ? 90 : metric === 'errors' ? 5 : 85
+  const warnAt = metric === 'errors' ? 2 : threshold - 10
+  const metricLabel = metric === 'disk' ? 'Disk' : metric === 'errors' ? 'Checkout errors' : 'Memory'
 
   const showNotices = useCallback((notices: Notice[]) => {
     notices.forEach((n) => term.current?.print(n.text, n.kind === 'resolved' ? 'green' : 'amber'))
@@ -86,9 +88,9 @@ export function PlayScreen({ run, onExit, onNext }: Props) {
   const current = objectives.find((o) => !o.done)
   const firing = live.alerts.filter((a) => a.state === 'firing')
   const points = live.metrics['web-01'] ?? []
-  const now = points.at(-1)?.[metric] ?? 0
+  const now = metric ? points.at(-1)?.[metric] ?? 0 : 0
   const hotService = live.map.nodes.find((n) => n.status !== 'ok' && live.logs[n.id])?.id
-  const shownLogs = logService ?? hotService ?? 'shop-web'
+  const shownLogs = logService ?? hotService ?? Object.keys(live.logs)[0] ?? ''
 
   return (
     <div className="play" data-tab={tab}>
@@ -107,9 +109,9 @@ export function PlayScreen({ run, onExit, onNext }: Props) {
       <div className="stage">
         <div className="pane pane-map rise" style={{ animationDelay: '60ms' }}>
           <SystemMap nodes={live.map.nodes} edges={live.map.edges} onInspect={inspect} />
-            <section className="card gauge pane-alerts">
-              <span className="eyebrow">{metric === 'disk' ? 'Disk' : 'Memory'} · web-01</span>
-              <div className={`metric ${now >= threshold ? 'bad' : now >= threshold - 10 ? 'warn' : 'ok'}`}>{now}%</div>
+            {metric && <section className="card gauge pane-alerts">
+              <span className="eyebrow">{metricLabel} · web-01</span>
+              <div className={`metric ${now >= threshold ? 'bad' : now >= warnAt ? 'warn' : 'ok'}`}>{now}%</div>
               <MetricChart points={points} metric={metric} threshold={threshold} />
               <ul className="alerts">
                 {live.alerts.length === 0 && <li className="muted">No alerts yet.</li>}
@@ -119,7 +121,7 @@ export function PlayScreen({ run, onExit, onNext }: Props) {
                   </li>
                 ))}
               </ul>
-            </section>
+            </section>}
         </div>
 
         <aside className="side">
@@ -127,8 +129,15 @@ export function PlayScreen({ run, onExit, onNext }: Props) {
             {live.status === 'completed' ? (
               <>
                 <span className="eyebrow">Chapter complete</span>
-                <h2>You fixed it, and it stays fixed.</h2>
+                <h2>Nice work. That's the chapter done.</h2>
                 <p className="muted">All {objectives.length} steps done in {live.clock} minutes of simulated time.</p>
+                {scenario.real_world && (
+                  <div className="real-world">
+                    <span className="eyebrow">This happened for real</span>
+                    <p>{scenario.real_world.text}</p>
+                    <a href={scenario.real_world.source_url} target="_blank" rel="noreferrer">{scenario.real_world.source_title}</a>
+                  </div>
+                )}
                 <div className="row">
                   {onNext && <button type="button" className="btn primary" onClick={onNext}><Icon name="play" />Next chapter</button>}
                   <button type="button" className="btn ghost" onClick={onExit}>All chapters</button>
@@ -164,7 +173,9 @@ export function PlayScreen({ run, onExit, onNext }: Props) {
       <section className="drawer pane-terminal rise" style={{ animationDelay: '240ms' }}>
         <div className="drawer-bar" role="tablist" aria-label="Terminal and logs">
           <button type="button" role="tab" aria-selected={drawer === 'terminal'} className={drawer === 'terminal' ? 'on' : ''} onClick={() => setDrawer('terminal')}>Terminal</button>
-          <button type="button" role="tab" aria-selected={drawer === 'logs'} className={drawer === 'logs' ? 'on' : ''} onClick={() => setDrawer('logs')}>Logs</button>
+          {Object.keys(live.logs).length > 0 && (
+            <button type="button" role="tab" aria-selected={drawer === 'logs'} className={drawer === 'logs' ? 'on' : ''} onClick={() => setDrawer('logs')}>Logs</button>
+          )}
           <span className="where mono">{live.prompt.replace(/[$#]$/, '')}</span>
         </div>
         <div className="drawer-body" hidden={drawer !== 'terminal'}>

@@ -26,7 +26,7 @@ class Sim::MonitoringMemoryLeakTest < ActiveSupport::TestCase
   test "metrics record one point per tick for the dashboard" do
     3.times { @engine.tick }
     assert_equal 4, @world.data["metrics"]["web-01"].size
-    assert_equal %w[cpu disk memory t], @world.data["metrics"]["web-01"].last.keys.sort
+    assert_equal %w[cpu disk errors memory t], @world.data["metrics"]["web-01"].last.keys.sort
   end
 
   test "restarting without fixing the config only buys time" do

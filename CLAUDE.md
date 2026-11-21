@@ -10,7 +10,8 @@
 - Browser-based DevOps simulator for beginners. Everything is simulated; nothing runs real commands.
 - `backend/`: Rails 8.1 API-only app (SQLite, Action Cable). The engine lives in `backend/lib/sim/`:
   `world.rb` (state), `shell.rb` (command interpreter), `engine.rb` (time + objectives),
-  `scenarios/*.rb` (one chapter each, listed in `scenarios.rb`).
+  `scenarios/*.rb` (one chapter each, listed in `scenarios.rb`). Delivery chapters use `repo.rb` (fake git),
+  `delivery_commands.rb` (git, gh, bin/rails test, deploy), `delivery_ci.rb` and `delivery_world.rb`.
 - `frontend/`: React + TypeScript (Vite), xterm.js terminal. Play screen is `src/components/PlayScreen.tsx`.
 - UI follows Royal's UI style rules (Geist, motion, accessibility) with this app's own "System map" theme in
   `frontend/src/styles.css`. Don't reuse the helpdesk look (dark sidebar + blue pill).
