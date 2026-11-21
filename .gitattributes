@@ -1,0 +1,9 @@
+# Count the frontend in GitHub's language stats.
+frontend/** linguist-vendored=false linguist-generated=false
+frontend/src/**/*.ts linguist-detectable=true linguist-language=TypeScript
+frontend/src/**/*.tsx linguist-detectable=true linguist-language=TSX
+frontend/src/**/*.css linguist-detectable=true
+
+# Lockfiles are generated.
+frontend/package-lock.json linguist-generated=true
+backend/Gemfile.lock linguist-generated=true
