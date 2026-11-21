@@ -5,6 +5,8 @@ terminal, logs and dashboards for a small online shop, and things go wrong:
 the disk fills up, memory leaks, a deploy breaks the site. Nothing is real,
 so you can't break anything.
 
+![The play screen in chapter 5: a system map of the shop with the background worker using too much memory, a memory chart, the chapter's steps, and a terminal](docs/play-screen.png)
+
 ## Chapters
 
 | # | Topic      | Chapter                | Status      |
@@ -47,3 +49,17 @@ curl -s -X POST localhost:3000/api/runs/1/tick
 ```
 
 Live updates for a run are broadcast on the `RunChannel` (Action Cable, `/cable`, param `run_id`).
+
+## Deploying to Render
+
+The repo has a `Dockerfile` that builds the frontend and serves it from Rails, so
+the whole app is one web service. `render.yaml` describes it as a Render Blueprint:
+
+1. In Render, choose **New > Blueprint** and pick this repository.
+2. Render reads `render.yaml`, creates the `devops-sim` web service on the free plan
+   and generates `SECRET_KEY_BASE`. Every push to `main` deploys again.
+
+The app runs as one Puma process, so Action Cable uses its built-in async adapter
+and no Redis is needed. Runs are saved in SQLite under `storage/`. The free plan has
+no persistent disk, so saved runs are lost on each deploy or restart. To keep them,
+use a paid plan and attach a disk at `/rails/storage`.

@@ -52,3 +52,20 @@ jobs:
         run: npm run lint
       - name: Type check and build
         run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build the production image
+        run: docker build -t devops-sim .
+
+      - name: Start it and check that it serves the app
+        run: |
+          docker run -d --name app -p 3000:3000 -e SECRET_KEY_BASE=ci-only-secret devops-sim
+          for i in $(seq 1 30); do curl -sf http://localhost:3000/up && break; sleep 1; done
+          curl -sf -H 'X-Forwarded-Proto: https' http://localhost:3000/ | grep -q '<div id="root">'
+          curl -sf -H 'X-Forwarded-Proto: https' http://localhost:3000/api/scenarios | grep -q github-first-pr
+      - if: failure()
+        run: docker logs app || true
