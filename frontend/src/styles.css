@@ -135,6 +135,8 @@ button { font: inherit; color: inherit; }
 .quest { padding: 20px; display: grid; gap: 12px; border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
   background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 12%, var(--surface)), var(--surface) 55%); }
 .quest h2 { font-size: 19px; line-height: 1.25; }
+.real-world { display: grid; gap: 6px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--accent-tint); font-size: 13.5px; }
+.real-world a { color: var(--accent); font-weight: 600; text-underline-offset: 3px; }
 .quest .hint { background: var(--accent-tint); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13.5px; }
 .dots { display: flex; gap: 6px; }
 .dots i { flex: 1; height: 6px; border-radius: 999px; background: var(--line); transition: background .3s; }

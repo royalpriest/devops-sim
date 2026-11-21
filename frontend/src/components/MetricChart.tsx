@@ -1,8 +1,8 @@
-import type { MetricPoint } from '../types'
+import type { Metric, MetricPoint } from '../types'
 
 interface Props {
   points: MetricPoint[]
-  metric: 'memory' | 'disk'
+  metric: Metric
   threshold: number
 }
 
@@ -15,7 +15,8 @@ export function MetricChart({ points, metric, threshold }: Props) {
   const y = (v: number) => h - (v / 100) * h
   const line = 'M' + data.map((v, i) => `${(i * step).toFixed(1)},${y(v).toFixed(1)}`).join(' L')
   const now = data.at(-1) ?? 0
-  const tone = now >= threshold ? 'var(--bad)' : now >= threshold - 10 ? 'var(--warn)' : 'var(--ok)'
+  const warnAt = metric === 'errors' ? 2 : threshold - 10
+  const tone = now >= threshold ? 'var(--bad)' : now >= warnAt ? 'var(--warn)' : 'var(--ok)'
 
   return (
     <svg className="chart" viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`${metric} over the last ${data.length} minutes, now ${now} percent`}>

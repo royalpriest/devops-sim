@@ -177,7 +177,7 @@ module Sim
         next unless host(name)["monitored"]
         series = (data["metrics"][name] ||= [])
         series << { "t" => clock, "memory" => memory_percent(name), "disk" => disk_percent(name),
-                    "cpu" => host(name).fetch("cpu_percent", 12) }
+                    "cpu" => host(name).fetch("cpu_percent", 12), "errors" => host(name).fetch("error_rate", 0) }
         series.shift while series.size > 120
       end
     end

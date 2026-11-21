@@ -6,8 +6,12 @@ export interface ScenarioSummary {
   topic: string
   chapter: number
   summary: string
-  focus_metric: 'memory' | 'disk'
+  focus_metric: Metric | null
 }
+
+export type Metric = 'memory' | 'disk' | 'errors'
+
+export interface RealWorld { text: string; source_title: string; source_url: string }
 
 export interface Objective { id: string; title: string; done: boolean }
 
@@ -20,7 +24,7 @@ export interface Alert {
   acknowledged: boolean
 }
 
-export interface MetricPoint { t: number; memory: number; disk: number; cpu: number }
+export interface MetricPoint { t: number; memory: number; disk: number; cpu: number; errors: number }
 
 export interface MapNode {
   id: string
@@ -31,6 +35,8 @@ export interface MapNode {
   detail: string
   level?: number
   inspect?: string
+  pos?: [number, number]
+  pos_narrow?: [number, number]
 }
 
 export interface Notice { kind: 'alert' | 'resolved' | string; text: string }
@@ -52,7 +58,7 @@ export interface LiveState {
 }
 
 export interface Run extends LiveState {
-  scenario: ScenarioSummary & { briefing: string }
+  scenario: ScenarioSummary & { briefing: string; real_world: RealWorld | null }
 }
 
 export interface Step extends LiveState {
