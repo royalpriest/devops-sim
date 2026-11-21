@@ -1,0 +1,10 @@
+/.git/
+/.github/
+**/node_modules/
+/frontend/dist/
+/backend/.bundle
+/backend/config/master.key
+/backend/log/*
+/backend/tmp/*
+/backend/storage/*
+**/.env*

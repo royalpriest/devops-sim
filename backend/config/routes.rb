@@ -12,4 +12,6 @@ Rails.application.routes.draw do
   end
 
   mount ActionCable.server => "/cable"
+
+  root "frontend#show"
 end
