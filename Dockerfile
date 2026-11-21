@@ -7,6 +7,10 @@
 #   docker build -t devops-sim .
 #   docker run -p 3000:3000 -e SECRET_KEY_BASE=$(openssl rand -hex 64) devops-sim
 
+# Keep in step with backend/.ruby-version. Declared before the first FROM so
+# every stage can use it.
+ARG RUBY_VERSION=3.3.14
+
 # --- frontend ---------------------------------------------------------------
 FROM docker.io/library/node:22-slim AS frontend
 WORKDIR /frontend
@@ -16,8 +20,6 @@ COPY frontend/ ./
 RUN npm run build
 
 # --- backend ----------------------------------------------------------------
-# Keep in step with backend/.ruby-version
-ARG RUBY_VERSION=3.3.14
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 WORKDIR /rails
 
