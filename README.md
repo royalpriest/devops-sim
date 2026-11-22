@@ -63,3 +63,7 @@ The app runs as one Puma process, so Action Cable uses its built-in async adapte
 and no Redis is needed. Runs are saved in SQLite under `storage/`. The free plan has
 no persistent disk, so saved runs are lost on each deploy or restart. To keep them,
 use a paid plan and attach a disk at `/rails/storage`.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
